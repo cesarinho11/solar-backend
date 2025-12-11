@@ -47,7 +47,17 @@ class CotizacionesController extends Controller
                 'total' => $request->total,
                 'total_venta' => $request->total_venta,
                 'telefono' => $request->telefono,
-                'tipo_pago' => $request->tipo_pago
+                'tipo_pago' => $request->tipo_pago,
+
+                'inversor' => $request->inversor,
+                'n_mod' => $request->n_mod,
+                'modulo_fv' => $request->modulo_fv,
+                'mat_montaje' => $request->mat_montaje,
+                's_fotovoltaico' => $request->s_fotovoltaico,
+                'tension' => $request->tension,
+                'demanda_kw' => $request->demanda_kw,
+                'inst_electrica' => $request->inst_electrica
+
             ]);
 
             $id_cotizacion = $cotizacion;
@@ -83,7 +93,16 @@ class CotizacionesController extends Controller
                 'total' => $request->total,
                 'total_venta' => $request->total_venta,
                 'telefono' => $request->telefono,
-                'tipo_pago' => $request->tipo_pago
+                'tipo_pago' => $request->tipo_pago,
+
+                'inversor' => $request->inversor,
+                'n_mod' => $request->n_mod,
+                'modulo_fv' => $request->modulo_fv,
+                'mat_montaje' => $request->mat_montaje,
+                's_fotovoltaico' => $request->s_fotovoltaico,
+                'tension' => $request->tension,
+                'demanda_kw' => $request->demanda_kw,
+                'inst_electrica' => $request->inst_electrica
             ]);
 
             $id_cotizacion = $cotizacion;
@@ -143,8 +162,9 @@ class CotizacionesController extends Controller
     public function productosCotizacion(Request $request)
     {
         $productosCotizacion = DB::table('cotizacion_producto')
-            ->select('cotizacion_producto.*', 'productos.nombre', 'productos.descripcion')
+            ->select('cotizacion_producto.*', 'productos.nombre','productos.codigo', 'productos.descripcion', 'productos.categoria','categoria_productos.nombre_categoria')
             ->join('productos','productos.id_producto','=','cotizacion_producto.id_producto')
+            ->join('categoria_productos','categoria_productos.id_categoria','=','productos.categoria')
             ->where('cotizacion_producto.id_cotizacion', $request->id)
             ->get();
         return response()->json($productosCotizacion);
@@ -161,6 +181,15 @@ class CotizacionesController extends Controller
             "total_venta"=> $request->total_venta,
             "telefono"=> $request->telefono,
             "tipo_pago"=> $request->tipo_pago,
+
+            'inversor' => $request->inversor,
+                'n_mod' => $request->n_mod,
+                'modulo_fv' => $request->modulo_fv,
+                'mat_montaje' => $request->mat_montaje,
+                's_fotovoltaico' => $request->s_fotovoltaico,
+                'tension' => $request->tension,
+                'demanda_kw' => $request->demanda_kw,
+                'inst_electrica' => $request->inst_electrica
         ]);
 
         DB::table('cotizacion_producto')->where('id_cotizacion', $request->id_cotizacion)->delete();

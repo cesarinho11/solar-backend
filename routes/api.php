@@ -51,6 +51,7 @@ Route::get('/getProductos', [ProductosController::class, 'getProductos']);
 Route::get('/getProductosList', [ProductosController::class, 'getProductosList']);
 Route::post('/updateProducto', [ProductosController::class, 'updateProducto']);
 Route::post('/deleteProducto', [ProductosController::class, 'deleteProducto']);
+Route::get('/categoriasProducto', [ProductosController::class, 'categoriasProducto']);
 
 //proveedores
 Route::get('/getProvedores', [ProveedoresController::class, 'getProvedores']);

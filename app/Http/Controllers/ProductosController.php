@@ -14,7 +14,8 @@ class ProductosController extends Controller
         $search = $request->get('search');
 
         $query = DB::table('productos')
-            ->select('productos.*');
+            ->select('productos.*','categoria_productos.nombre_categoria')
+            ->join('categoria_productos','categoria_productos.id_categoria','=','productos.categoria');
               $query->where('estatus','=', 1);
         if ($search) {
 
@@ -47,6 +48,7 @@ class ProductosController extends Controller
     public function addProducto(Request $request){
         $producto = DB::table("productos")->insertGetId([
             "nombre"=> $request->nombre,
+            "codigo"=> $request->codigo,
             "categoria"=> $request->categoria,
             "descripcion"=> $request->descripcion,
             "stock_min"=> $request->stock_min,
@@ -69,6 +71,7 @@ class ProductosController extends Controller
         ->where('id_producto',$request->id_producto)
         ->update([
             "nombre"=> $request->nombre,
+            "codigo"=> $request->codigo,
             "descripcion"=> $request->descripcion,
             "categoria"=> $request->categoria,
             "stock_min"=> $request->stock_min,
@@ -96,6 +99,13 @@ class ProductosController extends Controller
             "message"=> "Producto eliminado correctamente",
             "producto"=> $producto
         ]);
+    }
+
+    public function categoriasProducto(Request $request){
+            $categorias = DB::table('categoria_productos')
+            ->select('categoria_productos.*')
+            ->get();
+        return response()->json($categorias);
     }
 
 }
