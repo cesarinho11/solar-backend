@@ -16,10 +16,12 @@ class ClientesController extends Controller
             ->select('clientes.*');
         $query->where('estatus','=', 1);
         if ($search) {
-
-            $query->orwhere('domicilio', 'like', "%$search%")
-                ->orWhere('nombre', 'like', "%$search%")
-                ->orWhere('telefono', 'like', "%$search%");
+            
+           $query->where(function ($q) use ($search) {
+            $q->where('domicilio', 'like', "%{$search}%")
+              ->orWhere('nombre', 'like', "%{$search}%")
+              ->orWhere('telefono', 'like', "%{$search}%");
+        });
 
         }
         

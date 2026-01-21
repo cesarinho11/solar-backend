@@ -15,16 +15,22 @@ class ProveedoresController extends Controller
         $query = DB::table('proveedores')
             ->select('proveedores.*');
              $query->where('estatus','=', 1);
-        if ($search) {
-
-            $query->where('nombre', 'like', "%$search%")
-                ->orWhere('categoria', 'like', "%$search%");
-
-        }
+         if (!empty($search)) {
+        $query->where(function ($q) use ($search) {
+            $q->where('nombre', 'like', "%{$search}%")
+              ->orWhere('domicilio', 'like', "%{$search}%");
+        });
+    }
 
         $contratos = $query->paginate(10);
 
         return response()->json($contratos);
+    }
+
+       public function obtenerProveedores(Request $request)
+    {
+        $clientes = DB::table('proveedores')->get(); // SELECT * FROM users
+        return response()->json($clientes);
     }
 
     public function addProveedor(Request $request){

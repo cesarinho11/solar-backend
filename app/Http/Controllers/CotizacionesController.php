@@ -16,12 +16,13 @@ class CotizacionesController extends Controller
             ->select('cotizaciones.*', 'clientes.*')
              ->join('clientes', 'clientes.id_cliente', '=', 'cotizaciones.id_cliente');
              $query->where('cotizaciones.estatus', '=', 1);
-        if ($search) {
+      if (!empty($search)) {
+        $query->where(function ($q) use ($search) {
+            $q->where('clientes.nombre', 'like', "%{$search}%")
+              ->orWhere('cotizaciones.domicilio_instalacion', 'like', "%{$search}%");
+        });
+    }
 
-            $query->orwhere('nombre', 'like', "%$search%")
-                ->orWhere('categoria', 'like', "%$search%");
-
-        }
 
         $contratos = $query->paginate(10);
 
