@@ -9,7 +9,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-     public function register(Request $request)
+    public function register(Request $request)
     {
         $user = User::create([
             'name' => $request->name,
@@ -27,13 +27,31 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+
+
         $credentials = $request->only('email', 'password');
 
+        $user = User::where('email', $credentials['email'])->first();
+        // Usuario inactivo
+        if ($user->estatus != 1) {
+            return response()->json(['error' => 'Usuario inactivo'], 403);
+        }
+        // dump($credentials);
         if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Credenciales inválidas'], 401);
+            return response()->json(['error' => 'Credenciales inválidas', $credentials], 401);
         }
 
-        return response()->json(['token' => $token]);
+        // $user = auth()->user();
+        return response()->json([
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'nombre' => $user->name,
+                'tipo' => $user->tipo
+            ]
+        ]);
+
+        // return response()->json(['token' => $token]);
     }
 
     public function me()

@@ -10,6 +10,7 @@ use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\ProveedoresController;
+use App\Http\Controllers\PagosController;
 
 
 /*
@@ -77,9 +78,17 @@ Route::get('/getCompras', [ComprasController::class, 'getCompras']);
 Route::post('/addCompra', [ComprasController::class, 'addCompra']);
 Route::post('/updateCompra', [ComprasController::class, 'updateCompra']);
 Route::post('/confirmarCompra', [ComprasController::class, 'confirmarCompra']);
+Route::post('/productosCompra', [ComprasController::class, 'productosCompra']);
 
 //usuarios
 Route::get('/getUsuarios', [UsuariosController::class, 'getUsuarios']);
+Route::post('/addUsuario', [UsuariosController::class, 'addUsuario']);
+Route::post('/updateUsuario', [UsuariosController::class, 'updateUsuario']);
+Route::post('/deleteUsuario', [UsuariosController::class, 'deleteUsuario']);
+
+//pagos
+Route::post('/getPagosByCotizacion', [PagosController::class, 'getPagosByCotizacion']);
+Route::post('/addPago', [PagosController::class, 'addPago']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

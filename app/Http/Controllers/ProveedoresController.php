@@ -56,7 +56,7 @@ class ProveedoresController extends Controller
             "domicilio"=> $request->domicilio,
             "correo"=> $request->correo,
             "telefono"=> $request->telefono,
-            "estatus"=> $request->estatus
+            "estatus"=> 1
         ]);
 
         return response()->json([
