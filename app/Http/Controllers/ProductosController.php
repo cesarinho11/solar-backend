@@ -20,7 +20,9 @@ class ProductosController extends Controller
         if ($search) {
 
             $query->where('nombre', 'like', "%$search%")
-                ->orWhere('categoria', 'like', "%$search%");
+                ->orWhere('categoria', 'like', "%$search%")
+                ->orWhere('descripcion', 'like', "%$search%")
+                ->orWhere('categoria2', 'like', "%$search%");
 
         }
 
@@ -46,10 +48,24 @@ class ProductosController extends Controller
     }
 
     public function addProducto(Request $request){
+
+     // Validar si ya existe un producto con el mismo nombre
+    $existe = DB::table('productos')
+        ->where('nombre', $request->nombre)
+        ->exists();
+
+    if ($existe) {
+        return response()->json([
+            'message' => 'Ya existe un producto con ese nombre'
+        ], 400);
+    }
+
+    
         $producto = DB::table("productos")->insertGetId([
             "nombre"=> $request->nombre,
-            "codigo"=> $request->codigo,
+           
             "categoria"=> $request->categoria,
+            "categoria2"=> $request->categoria2,
             "descripcion"=> $request->descripcion,
             "stock_min"=> $request->stock_min,
             "stock_max"=> $request->stock_max,
@@ -57,7 +73,13 @@ class ProductosController extends Controller
             "costo"=> $request->costo,
             "precio"=> $request->precio,
             "tipo"=> $request->tipo,
+            "potencia"=> $request->potencia,
+            "marca"=> $request->marca,
+            "modelo"=> $request->modelo,
+            "desc_mini"=> $request->desc_mini,
+            "alerta"=> $request->alerta,
             "estatus"=> 1,
+            "ultima_compra"=> $request->ultima_compra,
         ]);
 
         return response()->json([
@@ -71,15 +93,22 @@ class ProductosController extends Controller
         ->where('id_producto',$request->id_producto)
         ->update([
             "nombre"=> $request->nombre,
-            "codigo"=> $request->codigo,
+        
             "descripcion"=> $request->descripcion,
             "categoria"=> $request->categoria,
+            "categoria2"=> $request->categoria2,
             "stock_min"=> $request->stock_min,
             "stock_max"=> $request->stock_max,
             "stock"=> $request->stock,
             "costo"=> $request->costo,
             "precio"=> $request->precio,
             "tipo"=> $request->tipo,
+            "potencia"=> $request->potencia,
+            "marca"=> $request->marca,
+            "modelo"=> $request->modelo,
+            "desc_mini"=> $request->desc_mini,
+            "alerta"=> $request->alerta,
+            "ultima_compra"=> $request->ultima_compra,
         ]);
 
         return response()->json([
@@ -91,6 +120,7 @@ class ProductosController extends Controller
     public function deleteProducto(Request $request){
         $producto = DB::table('productos')
         ->where('id_producto',$request->id)
+
         ->update([
             "estatus"=> 0
         ]);
@@ -106,6 +136,14 @@ class ProductosController extends Controller
             ->select('categoria_productos.*')
             ->get();
         return response()->json($categorias);
+    }
+    public function alertaStock(Request $request){
+            $stocks = DB::table('productos')
+              ->whereColumn('stock', '<=', 'stock_min')
+              ->where('estatus', '=', 1)
+              ->where('alerta', '=', 1)
+            ->get();
+        return response()->json($stocks);
     }
 
 }

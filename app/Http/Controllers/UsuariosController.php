@@ -95,4 +95,10 @@ class UsuariosController extends Controller
         ]);
     }
 
+    public function obtenerVendedores(Request $request)
+    {
+        $usuarios = DB::table('users')->get(); // SELECT * FROM users
+        return response()->json($usuarios);
+    }
+
 }

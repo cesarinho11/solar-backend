@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ComprasController extends Controller
 {
@@ -14,7 +15,7 @@ class ComprasController extends Controller
 
         $query = DB::table('compras')
             ->select('compras.*', 'proveedores.nombre', 'proveedores.domicilio', 'proveedores.correo', 'proveedores.telefono')
-             ->join('proveedores', 'proveedores.id_proveedor', '=', 'compras.id_proveedor');
+            ->join('proveedores', 'proveedores.id_proveedor', '=', 'compras.id_proveedor');
         if ($search) {
 
             $query->where('nombre', 'like', "%$search%")
@@ -30,11 +31,11 @@ class ComprasController extends Controller
     public function addCompra(Request $request)
     {
 
-       
 
-         if ($request->clienteNuevo == true) {
 
-             //inserto cliente
+        if ($request->clienteNuevo == true) {
+
+            //inserto cliente
             $proveedor_nuevo = DB::table('proveedores')->insertGetId([
                 'nombre' => $request->nombre,
                 'telefono' => $request->telefono,
@@ -43,81 +44,117 @@ class ComprasController extends Controller
             ]);
 
             $id_proveedor = $proveedor_nuevo;
-//insertar compra
-        $compra = DB::table('compras')->insertGetId([
-            'id_proveedor' =>  $id_proveedor,
-            'fecha' => $request->fecha,
-            'subtotal' => $request->total_compra,
-            'total' => $request->total_compra,
-            'sucursal' => 1,
-            'estatus' => 1
-        ]);
-
-        $id_compra = $compra;
-
-        $arr = $request->productos_compra;
-        $data = $arr;
-
-        for ($i = 0; $i < count($data); $i++) {
-            DB::table('compra_producto')->insert([
-                'id_compra' => $id_compra,
-                'id_producto' => $data[$i]['id_producto'],
-                'cantidad' => $data[$i]['cantidad'],
-                'costo' => $data[$i]['costo'],
-                'costo_compra' => $data[$i]['costo_compra'],
-                'total' => $data[$i]['total'],
-                'total_compra' => $data[$i]['total_compra'],
-                'lote' => $data[$i]['lote']
-                // 'estatus' => 1
+            //insertar compra
+            $compra = DB::table('compras')->insertGetId([
+                'id_proveedor' => $id_proveedor,
+                'fecha' => $request->fecha,
+                'subtotal' => $request->total_compra,
+                'total' => $request->total_compra,
+                'sucursal' => 1,
+                'estatus' => 1
             ]);
-        }
+
+            $id_compra = $compra;
+
+            $arr = $request->productos_compra;
+            $data = $arr;
+
+            for ($i = 0; $i < count($data); $i++) {
+                DB::table('compra_producto')->insert([
+                    'id_compra' => $id_compra,
+                    'id_producto' => $data[$i]['id_producto'],
+                    'cantidad' => $data[$i]['cantidad'],
+                    'costo' => $data[$i]['costo'],
+                    'costo_compra' => $data[$i]['costo_compra'],
+                    'total' => $data[$i]['total'],
+                    'total_compra' => $data[$i]['total_compra'],
+                    'lote' => $data[$i]['lote']
+                    // 'estatus' => 1
+                ]);
+
+                if ($data[$i]['costo'] != $data[$i]['costo_compra']) {
+                    DB::table('productos')
+                        ->where('id_producto', $data[$i]['id_producto'])
+                        ->update([
+                            'costo' => $data[$i]['costo_compra'],
+                            'ultima_compra' => Carbon::now('America/Mexico_City')->toDateString()
+
+                        ]);
+                }else{
+                    DB::table('productos')
+                        ->where('id_producto', $data[$i]['id_producto'])
+                        ->update([
+                            'ultima_compra' => Carbon::now('America/Mexico_City')->toDateString()
+
+                        ]);
+                }
 
 
-        return response()->json([
-            'message' => 'Compra creada correctamente',
-            'id' => $id_compra
-        ]);
+            }
 
 
-         }else{
+            return response()->json([
+                'message' => 'Compra creada correctamente',
+                'id' => $id_compra
+            ]);
+
+
+        } else {
 
             //insertar compra
-        $compra = DB::table('compras')->insertGetId([
-            'id_proveedor' => $request->id_proveedor,
-            'fecha' => $request->fecha,
-            'subtotal' => $request->total_compra,
-            'total' => $request->total_compra,
-            'sucursal' => 1,
-            'estatus' => 1
-        ]);
+            $compra = DB::table('compras')->insertGetId([
+                'id_proveedor' => $request->id_proveedor,
+                'fecha' => $request->fecha,
+                'subtotal' => $request->total_compra,
+                'total' => $request->total_compra,
+                'sucursal' => 1,
+                'estatus' => 1
+            ]);
 
-        $id_compra = $compra;
+            $id_compra = $compra;
 
-        $arr = $request->productos_compra;
-        $data = $arr;
+            $arr = $request->productos_compra;
+            $data = $arr;
 
-        for ($i = 0; $i < count($data); $i++) {
-            DB::table('compra_producto')->insert([
-                'id_compra' => $id_compra,
-                'id_producto' => $data[$i]['id_producto'],
-                'cantidad' => $data[$i]['cantidad'],
-                'costo' => $data[$i]['costo'],
-                'costo_compra' => $data[$i]['costo_compra'],
-                'total' => $data[$i]['total'],
-                'total_compra' => $data[$i]['total_compra'],
-                'lote' => $data[$i]['lote']
-                // 'estatus' => 1
+            for ($i = 0; $i < count($data); $i++) {
+                DB::table('compra_producto')->insert([
+                    'id_compra' => $id_compra,
+                    'id_producto' => $data[$i]['id_producto'],
+                    'cantidad' => $data[$i]['cantidad'],
+                    'costo' => $data[$i]['costo'],
+                    'costo_compra' => $data[$i]['costo_compra'],
+                    'total' => $data[$i]['total'],
+                    'total_compra' => $data[$i]['total_compra'],
+                    'lote' => $data[$i]['lote']
+                    // 'estatus' => 1
+                ]);
+
+                if ($data[$i]['costo'] != $data[$i]['costo_compra']) {
+                    DB::table('productos')
+                        ->where('id_producto', $data[$i]['id_producto'])
+                        ->update([
+                            'costo' => $data[$i]['costo_compra'],
+                            'ultima_compra' => Carbon::now('America/Mexico_City')->toDateString()
+
+                        ]);
+                }else{
+                    DB::table('productos')
+                        ->where('id_producto', $data[$i]['id_producto'])
+                        ->update([
+                            'ultima_compra' => Carbon::now('America/Mexico_City')->toDateString()
+
+                        ]);
+                }
+            }
+
+
+            return response()->json([
+                'message' => 'Compra creada correctamente',
+                'id' => $id_compra
             ]);
         }
 
 
-        return response()->json([
-            'message' => 'Compra creada correctamente',
-            'id' => $id_compra
-        ]);
-         }
-
-        
     }
 
 
@@ -127,11 +164,11 @@ class ComprasController extends Controller
             ->where('id_compra', $request->id_compra)
             ->update([
                 'id_proveedor' => $request->id_proveedor,
-            'fecha' => $request->fecha,
-            'subtotal' => $request->total_compra,
-            'total' => $request->total_compra,
-            'sucursal' => 1,
-            'estatus' => 1
+                'fecha' => $request->fecha,
+                'subtotal' => $request->total_compra,
+                'total' => $request->total_compra,
+                'sucursal' => 1,
+                'estatus' => 1
             ]);
 
         DB::table('compra_producto')->where('id_compra', $request->id_compra)->delete();
@@ -150,6 +187,23 @@ class ComprasController extends Controller
                 'total_compra' => $data[$i]['total_compra'],
                 'lote' => $data[$i]['lote']
             ]);
+
+            if ($data[$i]['costo'] != $data[$i]['costo_compra']) {
+                    DB::table('productos')
+                        ->where('id_producto', $data[$i]['id_producto'])
+                        ->update([
+                            'costo' => $data[$i]['costo_compra'],
+                            'ultima_compra' => Carbon::now('America/Mexico_City')->toDateString()
+
+                        ]);
+                }else{
+                    DB::table('productos')
+                        ->where('id_producto', $data[$i]['id_producto'])
+                        ->update([
+                            'ultima_compra' => Carbon::now('America/Mexico_City')->toDateString()
+
+                        ]);
+                }
         }
 
 
@@ -209,12 +263,24 @@ class ComprasController extends Controller
     public function productosCompra(Request $request)
     {
         $productosCompra = DB::table('compra_producto')
-            ->select('compra_producto.*', 'productos.nombre','productos.codigo', 'productos.descripcion', 'productos.categoria','categoria_productos.nombre_categoria')
-            ->join('productos','productos.id_producto','=','compra_producto.id_producto')
-            ->join('categoria_productos','categoria_productos.id_categoria','=','productos.categoria')
+            ->select('compra_producto.*', 'productos.nombre', 'productos.descripcion', 'productos.categoria', 'categoria_productos.nombre_categoria')
+            ->join('productos', 'productos.id_producto', '=', 'compra_producto.id_producto')
+            ->join('categoria_productos', 'categoria_productos.id_categoria', '=', 'productos.categoria')
             ->where('compra_producto.id_compra', $request->id)
             ->get();
         return response()->json($productosCompra);
+    }
+
+    public function eliminarCompra(Request $request)
+    {
+        $Compra = DB::table('compras')
+            ->where('id_compra', $request->id)->delete();
+
+        return response()->json([
+            "message" => "Compra eliminada correctamente",
+            "compra" => $Compra
+        ]);
+
     }
 
 }

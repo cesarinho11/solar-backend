@@ -11,6 +11,7 @@ use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\ProveedoresController;
 use App\Http\Controllers\PagosController;
+use App\Http\Controllers\ReportesController;
 
 
 /*
@@ -53,6 +54,7 @@ Route::get('/getProductosList', [ProductosController::class, 'getProductosList']
 Route::post('/updateProducto', [ProductosController::class, 'updateProducto']);
 Route::post('/deleteProducto', [ProductosController::class, 'deleteProducto']);
 Route::get('/categoriasProducto', [ProductosController::class, 'categoriasProducto']);
+Route::get('/alertaStock', [ProductosController::class, 'alertaStock']);
 
 //proveedores
 Route::get('/getProvedores', [ProveedoresController::class, 'getProvedores']);
@@ -66,6 +68,7 @@ Route::get('/getCotizaciones', [CotizacionesController::class, 'getCotizaciones'
 Route::post('/addCotizacion', [CotizacionesController::class, 'addCotizacion']);
 Route::post('/updateCotizacion', [CotizacionesController::class, 'updateCotizacion']);
 Route::post('/confirmarCotizacion', [CotizacionesController::class, 'confirmarCotizacion']);
+Route::post('/eliminarCotizacion', [CotizacionesController::class, 'eliminarCotizacion']);
 
 //ventas
 Route::get('/getVentas', [CotizacionesController::class, 'getVentas']);
@@ -79,16 +82,23 @@ Route::post('/addCompra', [ComprasController::class, 'addCompra']);
 Route::post('/updateCompra', [ComprasController::class, 'updateCompra']);
 Route::post('/confirmarCompra', [ComprasController::class, 'confirmarCompra']);
 Route::post('/productosCompra', [ComprasController::class, 'productosCompra']);
+Route::post('/eliminarCompra', [ComprasController::class, 'eliminarCompra']);
 
 //usuarios
 Route::get('/getUsuarios', [UsuariosController::class, 'getUsuarios']);
 Route::post('/addUsuario', [UsuariosController::class, 'addUsuario']);
 Route::post('/updateUsuario', [UsuariosController::class, 'updateUsuario']);
 Route::post('/deleteUsuario', [UsuariosController::class, 'deleteUsuario']);
+Route::get('/obtenerVendedores', [UsuariosController::class, 'obtenerVendedores']);
 
 //pagos
 Route::post('/getPagosByCotizacion', [PagosController::class, 'getPagosByCotizacion']);
 Route::post('/addPago', [PagosController::class, 'addPago']);
+Route::get('/alertaPagos', [PagosController::class, 'alertaPagos']);
+
+//reportes 
+Route::post('/productosVendidosReporte', [ReportesController::class, 'productosVendidosReporte']);
+Route::post('/totalVentas', [ReportesController::class, 'totalVentas']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

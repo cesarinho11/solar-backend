@@ -14,7 +14,78 @@ class Contratos extends Controller
         $search = $request->get('search');
 
         $query = DB::table('contratos')
-            ->select('contratos.*');
+         ->join('clientes', 'clientes.id_cliente', '=', 'contratos.cliente_id')
+        ->select(
+            'contratos.id_contrato',
+            'contratos.id_contrato',
+            'contratos.n_solicitud',
+            'contratos.fecha',
+            'contratos.dias',
+            'contratos.mes',
+            'contratos.year',
+            'contratos.fecha_operacion',
+            'contratos.fecha_inter',
+            'contratos.dias_inter',
+            'contratos.mes_inter',
+            'contratos.year_inter',
+            'contratos.fecha_contra',
+            'contratos.dias_contra',
+            'contratos.mes_contra',
+            'contratos.year_contra',
+            'contratos.cliente_id',
+            // 'contratos.nombre ',
+            'contratos.cargo',
+            'contratos.ine',
+            'contratos.tipo_doc',
+            'contratos.telefono',
+            'contratos.correo',
+            'contratos.ciudad',
+            'contratos.calle',
+            'contratos.n_exterior',
+            'contratos.n_interior',
+            'contratos.estado',
+            'contratos.municipio',
+            'contratos.cp',
+            'contratos.colonia',
+            'contratos.domicilio',
+            'contratos.rpu',
+            'contratos.rmu',
+            'contratos.n_cuenta',
+            'contratos.x',
+            'contratos.y',
+            'contratos.tension',
+            'contratos.capacidad',
+            'contratos.capacidad_incrementar_opcional',
+            'contratos.capacidad_incrementar',
+            'contratos.tension_interconexion',
+            'contratos.tecnologia',
+            'contratos.tecnologia_secundaria',
+            'contratos.regimen_contraprestacion',
+            'contratos.tarifa',
+            'contratos.voltaje',
+            'contratos.n_fases',
+            'contratos.n_hilos',
+            'contratos.n_medidor',
+            'contratos.tipo_medidor',
+            'contratos.carga',
+            'contratos.potencia',
+            'contratos.carga_total',
+            'contratos.central_electrica',
+            'contratos.n_unidades',
+            'contratos.baja_tencion',
+            'contratos.media_tension',
+            'contratos.consumo_centros',
+            'contratos.consumo_centros_ventas',
+            'contratos.venta_total',
+            'contratos.especificar',
+            'contratos.solar',
+            'contratos.biomasa',
+            'contratos.otro',
+            'contratos.eolico',
+            'contratos.cogeneracion',
+           
+            'clientes.nombre as nombre',
+        );
         if ($search) {
 
             $query->where('domicilio', 'like', "%$search%")
@@ -32,6 +103,15 @@ class Contratos extends Controller
     {
         //return $request;
         if ($request->clienteNuevo == true) {
+            $existe = DB::table('clientes')
+                ->where('telefono', $request->telefono)
+                ->exists();
+
+            if ($existe) {
+                return response()->json([
+                    'message' => 'Ya existe un cliente con ese numero'
+                ], 400);
+            }
 
             //inserto cliente
             $cliente_nuevo = DB::table('clientes')->insertGetId([

@@ -39,6 +39,8 @@ class ProveedoresController extends Controller
             "domicilio"=> $request->domicilio,
             "correo"=> $request->correo,
             "telefono"=> $request->telefono,
+            "empresa"=> $request->empresa,
+            "sucursal"=> $request->sucursal,
             "estatus"=> 1,
         ]);
 
@@ -56,6 +58,8 @@ class ProveedoresController extends Controller
             "domicilio"=> $request->domicilio,
             "correo"=> $request->correo,
             "telefono"=> $request->telefono,
+            "empresa"=> $request->empresa,
+            "sucursal"=> $request->sucursal,
             "estatus"=> 1
         ]);
 

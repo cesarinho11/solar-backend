@@ -38,6 +38,16 @@ class ClientesController extends Controller
 
     public function addCliente(Request $request)
     {
+        $existe = DB::table('clientes')
+                ->where('telefono', $request->telefono)
+                ->exists();
+
+            if ($existe) {
+                return response()->json([
+                    'message' => 'Ya existe un cliente con ese numero'
+                ], 400);
+            }
+            
         $clientes = DB::table('clientes')
             ->insert([
                 'nombre' => $request->nombre,
