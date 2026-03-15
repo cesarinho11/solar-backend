@@ -22,7 +22,7 @@ class ProveedoresController extends Controller
         });
     }
 
-        $contratos = $query->paginate(10);
+        $contratos = $query->get();
 
         return response()->json($contratos);
     }

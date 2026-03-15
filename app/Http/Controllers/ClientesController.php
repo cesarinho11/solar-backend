@@ -25,7 +25,7 @@ class ClientesController extends Controller
 
         }
         
-        $clientes = $query->paginate(10);
+        $clientes = $query->get();
 
         return response()->json($clientes);
     }

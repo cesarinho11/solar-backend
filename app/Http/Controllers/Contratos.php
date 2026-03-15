@@ -94,7 +94,7 @@ class Contratos extends Controller
 
         }
 
-        $contratos = $query->paginate(10);
+        $contratos = $query->get();
 
         return response()->json($contratos);
     }
@@ -362,6 +362,16 @@ class Contratos extends Controller
                 'otro' => $request->otro,
                 'eolico' => $request->eolico,
                 'cogeneracion' => $request->cogeneracion
+            ]);
+
+
+             $clientes = DB::table('clientes')
+            ->where('id_cliente', $request->cliente_id)
+            ->update([
+                // 'nombre' => $request->nombre,
+                'telefono' => $request->telefono,
+                'correo' => $request->correo,
+                // 'domicilio' => $request->domicilio
             ]);
 
 

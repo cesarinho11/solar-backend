@@ -148,11 +148,32 @@ public function totalVentas(Request $request){
     //     ->orderBy('c.fecha_venta', 'asc')
     //     ->get();
 
+    // $cotizaciones = DB::table('cotizaciones as c')
+    // ->join('clientes as cl', 'cl.id_cliente', '=', 'c.id_cliente')
+    // ->join('users as u', 'u.id', '=', 'c.vendedor')
+    // ->where('c.estatus', '>=', 2)
+    // ->whereBetween('c.fecha_venta', [$fechaInicio, $fechaFin])
+    // ->select(
+    //     'c.id_cotizacion',
+    //     'c.id_cliente',
+    //     'cl.nombre as cliente',
+    //     'c.domicilio_instalacion',
+    //     'c.fecha_venta',
+    //     'u.name as vendedor',
+    //     'c.total_venta',
+    //     'c.total_venta as total_cotizacion'
+    // )
+    // ->orderBy('c.fecha_venta', 'asc')
+    // ->get();
+
     $cotizaciones = DB::table('cotizaciones as c')
     ->join('clientes as cl', 'cl.id_cliente', '=', 'c.id_cliente')
     ->join('users as u', 'u.id', '=', 'c.vendedor')
+    ->leftJoin('cotizacion_producto as cp', 'cp.id_cotizacion', '=', 'c.id_cotizacion')
+    ->leftJoin('productos as p', 'p.id_producto', '=', 'cp.id_producto')
     ->where('c.estatus', '>=', 2)
     ->whereBetween('c.fecha_venta', [$fechaInicio, $fechaFin])
+     ->where('p.categoria', 1) 
     ->select(
         'c.id_cotizacion',
         'c.id_cliente',
@@ -161,7 +182,17 @@ public function totalVentas(Request $request){
         'c.fecha_venta',
         'u.name as vendedor',
         'c.total_venta',
-        'c.total_venta as total_cotizacion'
+        'c.total_venta as total_cotizacion',
+        DB::raw("GROUP_CONCAT(CONCAT(' ( ',cp.cantidad,' ) ', p.nombre) SEPARATOR '\n  ') as productos")
+    )
+    ->groupBy(
+        'c.id_cotizacion',
+        'c.id_cliente',
+        'cl.nombre',
+        'c.domicilio_instalacion',
+        'c.fecha_venta',
+        'u.name',
+        'c.total_venta'
     )
     ->orderBy('c.fecha_venta', 'asc')
     ->get();

@@ -10,13 +10,14 @@ class ProductosController extends Controller
 
     public function getProductos(Request $request)
     {
-        $per_page = $request->get('page', 10);
+        $per_page = $request->get('per_page', 10);
         $search = $request->get('search');
 
         $query = DB::table('productos')
             ->select('productos.*','categoria_productos.nombre_categoria')
             ->join('categoria_productos','categoria_productos.id_categoria','=','productos.categoria');
               $query->where('estatus','=', 1);
+              $query->where('productos.categoria','!=', 4);
         if ($search) {
 
             $query->where('nombre', 'like', "%$search%")
@@ -26,7 +27,8 @@ class ProductosController extends Controller
 
         }
 
-        $contratos = $query->paginate(10);
+        // $contratos = $query->paginate($per_page);
+        $contratos =  $query->get();
 
         return response()->json($contratos);
     }
@@ -146,4 +148,28 @@ class ProductosController extends Controller
         return response()->json($stocks);
     }
 
+    //herramientas
+        public function getHerramientas(Request $request)
+    {
+        $per_page = $request->get('page', 10);
+        $search = $request->get('search');
+
+        $query = DB::table('productos')
+            ->select('productos.*','categoria_productos.nombre_categoria')
+            ->join('categoria_productos','categoria_productos.id_categoria','=','productos.categoria');
+              $query->where('estatus','=', 1);
+              $query->where('productos.categoria','=', 4);
+        if ($search) {
+
+            $query->where('nombre', 'like', "%$search%")
+                ->orWhere('categoria', 'like', "%$search%")
+                ->orWhere('descripcion', 'like', "%$search%")
+                ->orWhere('categoria2', 'like', "%$search%");
+
+        }
+
+        $contratos = $query->get();
+
+        return response()->json($contratos);
+    }
 }
