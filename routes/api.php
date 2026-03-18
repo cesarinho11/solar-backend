@@ -72,6 +72,7 @@ Route::post('/addCotizacion', [CotizacionesController::class, 'addCotizacion']);
 Route::post('/updateCotizacion', [CotizacionesController::class, 'updateCotizacion']);
 Route::post('/confirmarCotizacion', [CotizacionesController::class, 'confirmarCotizacion']);
 Route::post('/eliminarCotizacion', [CotizacionesController::class, 'eliminarCotizacion']);
+Route::post('/agregarMaterialInstalacion', [CotizacionesController::class, 'agregarMaterialInstalacion']);
 
 //ventas
 Route::get('/getVentas', [CotizacionesController::class, 'getVentas']);
@@ -102,6 +103,7 @@ Route::get('/alertaPagos', [PagosController::class, 'alertaPagos']);
 //reportes 
 Route::post('/productosVendidosReporte', [ReportesController::class, 'productosVendidosReporte']);
 Route::post('/totalVentas', [ReportesController::class, 'totalVentas']);
+Route::post('/totalVentasSinAgrupar', [ReportesController::class, 'totalVentasSinAgrupar']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

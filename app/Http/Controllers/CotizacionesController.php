@@ -333,6 +333,34 @@ class CotizacionesController extends Controller
             "Cotizacion" => $Cotizacion
         ]);
 
+        
+    }
+    
+    public function agregarMaterialInstalacion(Request $request)
+    {
+        $arr = $request->productos_cotizacion;
+            $data = $arr;
+
+            for ($i = 0; $i < count($data); $i++) {
+                DB::table('cotizacion_producto')->insert([
+                    'id_cotizacion' => $request->id_cotizacion,
+                    'id_producto' => $data[$i]['id_producto'],
+                    'cantidad' => $data[$i]['cantidad'],
+                    'precio' => $data[$i]['precio'],
+                    'precio_venta' => $data[$i]['precio_venta'],
+                    'total_partida' => $data[$i]['total'],
+                    'total_partida_venta' => $data[$i]['total_venta']
+                ]);
+            }
+
+
+        return response()->json([
+            "message" => "Materiales agregados correctamente",
+            "Cotizacion" => $request->id_cotizacion
+        ]);
+
+
+        
     }
 
 }

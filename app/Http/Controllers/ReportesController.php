@@ -211,4 +211,51 @@ public function totalVentas(Request $request){
         'gran_total' => $granTotal ?? 0
     ]);
 }
+
+public function totalVentasSinAgrupar(Request $request){
+     $fechaInicio = Carbon::parse($request->fecha_inicio, 'America/Mexico_City')
+        ->startOfDay();
+
+    $fechaFin = Carbon::parse($request->fecha_fin, 'America/Mexico_City')
+        ->endOfDay();
+
+    $cotizaciones = DB::table('cotizaciones as c')
+    ->join('clientes as cl', 'cl.id_cliente', '=', 'c.id_cliente')
+    ->join('users as u', 'u.id', '=', 'c.vendedor')
+    ->leftJoin('cotizacion_producto as cp', 'cp.id_cotizacion', '=', 'c.id_cotizacion')
+    ->leftJoin('productos as p', 'p.id_producto', '=', 'cp.id_producto')
+    ->where('c.estatus', '>=', 2)
+    ->whereBetween('c.fecha_venta', [$fechaInicio, $fechaFin])
+     ->where('p.categoria', 1) 
+    ->select(
+        'c.id_cotizacion',
+        'c.id_cliente',
+        'cl.nombre as cliente',
+        'c.domicilio_instalacion',
+        'c.fecha_venta',
+        'u.name as vendedor',
+        'c.total_venta',
+        'c.total_venta as total_cotizacion',
+        'cp.cantidad',
+        'p.nombre as producto',
+        // DB::raw("GROUP_CONCAT(CONCAT(' ( ',cp.cantidad,' ) ', p.nombre) SEPARATOR '\n  ') as productos")
+    )
+    ->orderBy('c.fecha_venta', 'asc')
+    ->get();
+
+    /* 🔹 Gran total del periodo */
+    $granTotal = DB::table('cotizaciones as c')
+        ->where('c.estatus', '>=', 2)
+        ->whereBetween('c.fecha_venta', [$fechaInicio, $fechaFin])
+        ->select(DB::raw('SUM(c.total_venta) as gran_total'))
+        ->value('gran_total');
+
+    return response()->json([
+        'fecha_inicio' => $fechaInicio->toDateString(),
+        'fecha_fin' => $fechaFin->toDateString(),
+        'cotizaciones' => $cotizaciones,
+        'gran_total' => $granTotal ?? 0
+    ]);
+}
+
 }
