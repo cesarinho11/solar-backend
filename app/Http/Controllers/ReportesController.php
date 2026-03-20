@@ -258,4 +258,20 @@ public function totalVentasSinAgrupar(Request $request){
     ]);
 }
 
+    public function getInventario(Request $request)
+    {
+        $per_page = $request->get('per_page', 10);
+        $search = $request->get('search');
+
+        $query = DB::table('productos')
+            ->select('productos.*','categoria_productos.nombre_categoria')
+            ->join('categoria_productos','categoria_productos.id_categoria','=','productos.categoria');
+              $query->where('estatus','=', 1);
+
+        // $contratos = $query->paginate($per_page);
+        $contratos =  $query->get();
+
+        return response()->json($contratos);
+    }
+
 }

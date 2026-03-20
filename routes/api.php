@@ -104,6 +104,7 @@ Route::get('/alertaPagos', [PagosController::class, 'alertaPagos']);
 Route::post('/productosVendidosReporte', [ReportesController::class, 'productosVendidosReporte']);
 Route::post('/totalVentas', [ReportesController::class, 'totalVentas']);
 Route::post('/totalVentasSinAgrupar', [ReportesController::class, 'totalVentasSinAgrupar']);
+Route::get('/getInventario', [ReportesController::class, 'getInventario']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
